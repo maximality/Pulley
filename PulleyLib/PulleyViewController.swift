@@ -939,7 +939,9 @@ open class PulleyViewController: UIViewController, PulleyDrawerViewControllerDel
         
         maskDrawerVisualEffectView()
         maskBackgroundDimmingView()
-        setDrawerPosition(position: drawerPosition, animated: false)
+        if drawerPanGestureRecognizer.state != .began && drawerPanGestureRecognizer.state != .changed {
+            setDrawerPosition(position: drawerPosition, animated: false)
+        }
     }
 
     // MARK: Private State Updates
