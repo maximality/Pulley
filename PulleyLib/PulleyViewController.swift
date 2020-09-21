@@ -598,13 +598,14 @@ open class PulleyViewController: UIViewController, PulleyDrawerViewControllerDel
     /// The currently rendered display mode for Pulley. This will match displayMode unless you have it set to 'automatic'. This will provide the 'actual' display mode (never automatic).
     public fileprivate(set) var currentDisplayMode: PulleyDisplayMode = .automatic {
         didSet {
-            if self.isViewLoaded
-            {
-                self.view.setNeedsLayout()
-            }
             
             if oldValue != currentDisplayMode
             {
+                if self.isViewLoaded
+                {
+                    self.view.setNeedsLayout()
+                }
+                
                 delegate?.drawerDisplayModeDidChange?(drawer: self)
                 (drawerContentViewController as? PulleyDrawerViewControllerDelegate)?.drawerDisplayModeDidChange?(drawer: self)
                 (primaryContentContainer as? PulleyPrimaryContentControllerDelegate)?.drawerDisplayModeDidChange?(drawer: self)
@@ -997,7 +998,10 @@ open class PulleyViewController: UIViewController, PulleyDrawerViewControllerDel
      user of this library), then the corners parameter will be ignored.
      */
     private func drawerMaskingPath(byRoundingCorners corners: UIRectCorner) -> UIBezierPath {
-        drawerContentViewController.view.layoutIfNeeded()
+        // In lue of drawerContentViewController.view.layoutIfNeeded() whenever this function is called, if the viewController is loaded setNeedsLayout
+        if drawerContentViewController.isViewLoaded {
+            drawerContentViewController.view.setNeedsLayout()
+        }
 
         let path: UIBezierPath
         if let customPath = (drawerContentViewController.view.layer.mask as? CAShapeLayer)?.path {
